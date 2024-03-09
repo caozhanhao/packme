@@ -3,6 +3,10 @@ packme
 </h2> 
 
 <p align="center">
+<strong> A single header C++ library for serialization</strong>
+</p>
+
+<p align="center">
   <a href="https://github.com/caozhanhao/packme/actions/workflows/tests.yml" >
     <img src="https://img.shields.io/github/actions/workflow/status/caozhanhao/packme/tests.yml?style=flat-square" alt="build" />  
   </a>
