@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.8.2)
+project(packme)
+set(CMAKE_CXX_STANDARD 20)
+include_directories(../include)
+add_executable(packme_tests packme_tests.cpp)
+add_test(NAME packme_tests COMMAND packme_tests)
