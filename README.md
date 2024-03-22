@@ -25,8 +25,11 @@ packme
 
 `#include "packme/packme.h"`
 
-### Example
-
+### Usage
+#### non-invasive
+- aggregate struct 
+- trivially copyable type
+- container with `begin()`, `end()`, `insert(iter, val)`
 ```c++
 struct A{ int a; double b;};
 struct B
@@ -44,7 +47,31 @@ B b{ 1, "2", std::vector<int>{ 3 },
 std::string str = pack(b);
 B new_b = unpack<B>(str);
 ```
+#### invasive
+- types with `PACKME_FIELDS(typename, field1, field2, ...)`  
 
+ `PACKME_FIELDS` will generate two functions in place, which are a constructor and a function packing every field.
+
+```c++
+class C
+{
+private:
+  int a;   
+  std::string b;
+  double* c; 
+public:
+  C(std::string b_): a(128), b(std::move(b_)), c(new double(3.14)) { }   
+  ~C()
+  {
+    delete c;
+    c = nullptr;
+  }
+  PACKME_FIELDS(C, a, b, c);
+}; 
+C c("packme");
+std::string str = pack(c);
+C new_c = unpack<C>(str);
+```
 ### Note
 
 - Requires C++ 20

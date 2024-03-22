@@ -63,7 +63,8 @@ namespace packme::test
     PACKME_EXPECT_EQ("PACK ME TEST STRING", unpack<std::string>(str))
     
     // Trivially Copyable
-    struct A {int a; double b;
+    struct A {
+      int a; double b;
       bool operator==(const A& a1) const
       {
         return a == a1.a && b == a1.b;
@@ -75,7 +76,8 @@ namespace packme::test
     PACKME_EXPECT_EQ(a, unpack<A>(str));
 
     // Aggregate Struct
-    struct B {int a; std::string b; std::vector<int> c; std::map<std::string, int> d; A e;
+    struct B {
+      int a; std::string b; std::vector<int> c; std::map<std::string, int> d; A e;
       bool operator==(const B& b1) const
       {
         return a == b1.a && b == b1.b && c == b1.c && d == b1.d && e == b1.e;
@@ -84,6 +86,33 @@ namespace packme::test
     B b{1, "2", std::vector<int>{3}, std::map<std::string, int>{{"4", 5}}, A{6, 7.0}};
     str = pack(b);
     PACKME_EXPECT_EQ(b, unpack<B>(str))
+  
+  
+    // Custom Type
+    class C
+    {
+    private:
+      int a;
+      std::string b;
+      double* c;
+    public:
+      C(std::string b_): a(128), b(std::move(b_)), c(new double(3.14)) { }
+      ~C()
+      {
+        delete c;
+        c= nullptr;
+      }
+      bool operator==(const C& c1) const
+      {
+        return a == c1.a && b == c1.b && *c == *c1.c;
+      }
+      PACKME_FIELDS(C, a, b, c);
+    };
+    static_assert(!std::is_aggregate_v<C>);
+    C c("packme");
+    str = pack(c);
+    PACKME_EXPECT_EQ(c, unpack<C>(str))
+    
 
     // Tuple Like
     auto tuple_like1 = std::make_tuple(b, a, 1, 2, 3.0, 4e31);
@@ -118,9 +147,9 @@ namespace packme::test
     container2.insert(container2.end(), 1);
   
     str = pack(container1);
-    PACKME_EXPECT_EQ(container1, unpack<decltype(container1)>(str))
+    PACKME_EXPECT_EQ(container1, unpack<std::vector<std::string>>(str))
     str = pack(container2);
-    PACKME_EXPECT_EQ(container2, unpack<decltype(container2)>(str))
+    PACKME_EXPECT_EQ(container2, unpack<Container>(str))
   }
 }
 
