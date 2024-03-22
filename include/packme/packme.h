@@ -472,7 +472,7 @@ namespace packme
     template<typename T>
     auto item_unpack_helper(const std::string &str, size_t &pos)
     {
-      // trivially copy doesn't need size.
+      // These types don't need a size indicator.
       if constexpr(tag_is<T, trivially_copy_tag> || (tag_is<T, int_tag> && sizeof(T) == 1))
       {
         std::string buf = str.substr(pos, sizeof(T));
@@ -482,7 +482,7 @@ namespace packme
       else
       {
         // if tag is not trivially_copy_tag, it must be int, string or custom-type,
-        // and they all have an integer indicating size or value at the beginning.
+        // and they all have an integer at the beginning indicating its size(trivially_copy) or value(int).
         size_t int_size = 1;
         for (size_t i = pos; i < str.size(); ++i, ++int_size)
         {

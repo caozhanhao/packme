@@ -8,17 +8,17 @@ namespace packme::test
   PACKME_TEST(czh)
   {
     // Number
-    auto s1 = pack<uint32_t>(64);
-    PACKME_EXPECT_EQ(64, unpack<uint32_t>(s1))
-    PACKME_EXPECT_EQ(s1.size(), 1)
-    auto s2 = pack(-128);
-    PACKME_EXPECT_EQ(-128, unpack<int>(s2))
-    PACKME_EXPECT_EQ(s2.size(), 2)
-    auto s3 = pack((std::numeric_limits<unsigned long long>::max)());
-    PACKME_EXPECT_EQ((std::numeric_limits<unsigned long long>::max)(), unpack<unsigned long long>(s3))
-    auto s4 = pack((std::numeric_limits<long long>::min)());
-    PACKME_EXPECT_EQ((std::numeric_limits<long long>::min)(), unpack<long long>(s4))
-    
+    std::string str;
+    str = pack<uint32_t>(64);
+    PACKME_EXPECT_EQ(64, unpack<uint32_t>(str))
+    PACKME_EXPECT_EQ(str.size(), 1)
+    str = pack(-128);
+    PACKME_EXPECT_EQ(-128, unpack<int>(str))
+    PACKME_EXPECT_EQ(str.size(), 2)
+    str = pack((std::numeric_limits<unsigned long long>::max)());
+    PACKME_EXPECT_EQ((std::numeric_limits<unsigned long long>::max)(), unpack<unsigned long long>(str))
+    str = pack((std::numeric_limits<long long>::min)());
+    PACKME_EXPECT_EQ((std::numeric_limits<long long>::min)(), unpack<long long>(str))
 
     auto num_test = []<typename T>()
         {
@@ -38,21 +38,30 @@ namespace packme::test
     num_test.operator()<uint32_t>();
     num_test.operator()<int64_t>();
     num_test.operator()<uint64_t>();
-
+  
+    // Enum
+    
+    enum class E
+    {
+      A, B, C, D
+    };
+    
+    str = pack<E>(E::A);
+    PACKME_EXPECT_EQ(unpack<E>(str), E::A);
+    str = pack<E>(E::C);
+    PACKME_EXPECT_EQ(unpack<E>(str), E::C)
     
     // Array and String
-    auto s5 = pack<const char[20]>("PACK ME TEST STRING");
-    PACKME_EXPECT_EQ(s5.size(), 20)
-    auto chararray = unpack<const char[20]>(s5);
+    str = pack<const char[20]>("PACK ME TEST STRING");
+    PACKME_EXPECT_EQ(str.size(), 20)
+    auto chararray = unpack<const char[20]>(str);
     PACKME_EXPECT_TRUE(strcmp("PACK ME TEST STRING", chararray) == 0)
     free(const_cast<char*>(chararray));
-    
-    s5 = pack(std::string{"PACK ME TEST STRING"});
-    PACKME_EXPECT_EQ(s5.size(), 19)
-    PACKME_EXPECT_EQ("PACK ME TEST STRING", unpack<std::string>(s5))
-    
-    
   
+    str = pack(std::string{"PACK ME TEST STRING"});
+    PACKME_EXPECT_EQ(str.size(), 19)
+    PACKME_EXPECT_EQ("PACK ME TEST STRING", unpack<std::string>(str))
+    
     // Trivially Copyable
     struct A {int a; double b;
       bool operator==(const A& a1) const
@@ -62,8 +71,8 @@ namespace packme::test
     };
     static_assert(std::is_trivially_copyable_v<A>);
     A a{1, 2.0};
-    auto s6 = pack(a);
-    PACKME_EXPECT_EQ(a, unpack<A>(s6));
+    str = pack(a);
+    PACKME_EXPECT_EQ(a, unpack<A>(str));
 
     // Aggregate Struct
     struct B {int a; std::string b; std::vector<int> c; std::map<std::string, int> d; A e;
@@ -73,16 +82,16 @@ namespace packme::test
       }};
     static_assert(std::is_aggregate_v<B>);
     B b{1, "2", std::vector<int>{3}, std::map<std::string, int>{{"4", 5}}, A{6, 7.0}};
-    auto s7 = pack(b);
-    PACKME_EXPECT_EQ(b, unpack<B>(s7))
+    str = pack(b);
+    PACKME_EXPECT_EQ(b, unpack<B>(str))
 
     // Tuple Like
     auto tuple_like1 = std::make_tuple(b, a, 1, 2, 3.0, 4e31);
     auto tuple_like2 = std::make_pair(a, b);
-    auto s8 = pack(tuple_like1);
-    auto s9 = pack(tuple_like2);
-    PACKME_EXPECT_EQ(tuple_like1, unpack<decltype(tuple_like1)>(s8))
-    PACKME_EXPECT_EQ(tuple_like2, unpack<decltype(tuple_like2)>(s9))
+    str = pack(tuple_like1);
+    PACKME_EXPECT_EQ(tuple_like1, unpack<decltype(tuple_like1)>(str))
+    str= pack(tuple_like2);
+    PACKME_EXPECT_EQ(tuple_like2, unpack<decltype(tuple_like2)>(str))
 
     // Container
     std::vector<std::string> container1{"A", "B", "C"};
@@ -107,11 +116,11 @@ namespace packme::test
     };
     Container container2;
     container2.insert(container2.end(), 1);
-
-    auto s10 = pack(container1);
-    auto s11 = pack(container2);
-    PACKME_EXPECT_EQ(container1, unpack<decltype(container1)>(s10))
-    PACKME_EXPECT_EQ(container2, unpack<decltype(container2)>(s11))
+  
+    str = pack(container1);
+    PACKME_EXPECT_EQ(container1, unpack<decltype(container1)>(str))
+    str = pack(container2);
+    PACKME_EXPECT_EQ(container2, unpack<decltype(container2)>(str))
   }
 }
 
