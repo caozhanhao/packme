@@ -30,7 +30,6 @@
 #include <set>
 #include <queue>
 #include <iterator>
-#include <bitset>
 #include <tuple>
 #include <variant>
 #include <array>
@@ -336,27 +335,15 @@ namespace packme
         }
         else
         {
-          std::string data;
-          data.resize(8);
+          std::string data(((sizeof(T) * 8) / 7) * 8 + 1, '\0');
           size_t pos = 0;
           auto num = item;
           while (num >= 128)
           {
-            char a = num % 128;
-            num = (num - a) / 128;
-            std::bitset<8> byte(a);
-            byte.flip(7);
-            char tmp = byte.to_ulong();
-            if (pos + 8 >= data.size())
-              data.resize(data.size() + 2);
-            std::memcpy(data.data() + pos, &tmp, 1);
-            pos += 1;
+            data[pos++] = 0x80 | static_cast<char>(num & 0x7f);
+            num >>= 7;
           }
-          char a = num % 128;
-          std::bitset<8> byte(a);
-          char tmp = byte.to_ulong();
-          std::memcpy(data.data() + pos, &tmp, 1);
-          pos += 1;
+          data[pos++] = static_cast<char>(num);
           return data.substr(0, pos);
         }
       }
@@ -378,15 +365,14 @@ namespace packme
         }
         else
         {
-          std::bitset<sizeof(T) * 8> result;
-          size_t pos = 0;
-          for (auto &c: str)
+          T result = 0;
+          size_t shift = 0;
+          for (auto &c : str)
           {
-            std::bitset<8> byte(c);
-            for (size_t i = 0; i < 7 && pos < result.size(); ++i, ++pos)
-              result[pos] = byte[i];
+            result |= static_cast<T>(c & 0x7f) << shift;
+            shift += 7;
           }
-          return static_cast<T>(result.to_ullong());
+          return result;
         }
       }
       else
@@ -410,8 +396,7 @@ namespace packme
     template<typename T>
     std::string internal_pack(trivially_copy_tag, const T &item)
     {
-      std::string data;
-      data.resize(sizeof(T));
+      std::string data(sizeof(T), '\0');
       std::memcpy(data.data(), &item, sizeof(T));
       return data;
     }
@@ -501,7 +486,7 @@ namespace packme
         size_t int_size = 1;
         for (size_t i = pos; i < str.size(); ++i, ++int_size)
         {
-          if (std::bitset<8>(str[i])[7] == 0) break;
+          if ((str[i] & 0x80) == 0) break;
         }
         std::string buf = str.substr(pos, int_size);
         pos += int_size;
@@ -523,8 +508,7 @@ namespace packme
     template<typename T>
     std::string internal_pack(container_tag, const T &item)
     {
-      std::string buf;
-      buf.resize(64);
+      std::string buf(64, '\0');
       size_t pos = 0;
       for (const auto& r : item)
         item_pack_helper(buf, pos, r);
@@ -547,8 +531,7 @@ namespace packme
     template<typename T>
     std::string internal_pack(struct_tag, const T &item)
     {
-      std::string buf;
-      buf.resize(64);
+      std::string buf(64, '\0');
       size_t pos = 0;
       field_for_each(item, [&buf, &pos](auto &&r) { item_pack_helper(buf, pos, r); });
       return buf.substr(0, pos);
@@ -568,8 +551,7 @@ namespace packme
     std::string internal_pack(array_tag, const T &item)
     {
       using value_type = std::remove_extent_t<T>;
-      std::string buf;
-      buf.resize(64);
+      std::string buf(64, '\0');
       size_t pos = 0;
       for (size_t i = 0; i < sizeof(T) / sizeof(value_type); ++i)
         item_pack_helper(buf, pos, item[i]);

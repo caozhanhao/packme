@@ -8,8 +8,8 @@ namespace packme::test
   PACKME_TEST(czh)
   {
     // Number
-    auto s1 = pack(63);
-    PACKME_EXPECT_EQ(63, unpack<int>(s1))
+    auto s1 = pack<uint32_t>(64);
+    PACKME_EXPECT_EQ(64, unpack<uint32_t>(s1))
     PACKME_EXPECT_EQ(s1.size(), 1)
     auto s2 = pack(-128);
     PACKME_EXPECT_EQ(-128, unpack<int>(s2))
@@ -18,6 +18,27 @@ namespace packme::test
     PACKME_EXPECT_EQ((std::numeric_limits<unsigned long long>::max)(), unpack<unsigned long long>(s3))
     auto s4 = pack((std::numeric_limits<long long>::min)());
     PACKME_EXPECT_EQ((std::numeric_limits<long long>::min)(), unpack<long long>(s4))
+    
+
+    auto num_test = []<typename T>()
+        {
+          std::random_device rd;
+          std::mt19937 gen(rd());
+          for(int i = 0; i < 1024; ++i)
+          {
+            std::uniform_int_distribution<T> u((std::numeric_limits<T>::min)(),(std::numeric_limits<T>::max)());
+            auto num = u(gen);
+            auto s = pack(num);
+            PACKME_EXPECT_EQ(unpack<T>(s), num);
+          }
+        };
+    num_test.operator()<int16_t>();
+    num_test.operator()<uint16_t>();
+    num_test.operator()<int32_t>();
+    num_test.operator()<uint32_t>();
+    num_test.operator()<int64_t>();
+    num_test.operator()<uint64_t>();
+
     
     // Array and String
     auto s5 = pack<const char[20]>("PACK ME TEST STRING");
@@ -29,6 +50,8 @@ namespace packme::test
     s5 = pack(std::string{"PACK ME TEST STRING"});
     PACKME_EXPECT_EQ(s5.size(), 19)
     PACKME_EXPECT_EQ("PACK ME TEST STRING", unpack<std::string>(s5))
+    
+    
   
     // Trivially Copyable
     struct A {int a; double b;
