@@ -52,11 +52,11 @@ namespace packme::test
     PACKME_EXPECT_EQ(unpack<E>(str), E::C)
     
     // Array and String
-    str = pack<const char[20]>("PACK ME TEST STRING");
+    str = pack<char[20]>("PACK ME TEST STRING");
     PACKME_EXPECT_EQ(str.size(), 20)
-    auto chararray = unpack<const char[20]>(str);
+    auto chararray = unpack<char[20]>(str);
     PACKME_EXPECT_TRUE(strcmp("PACK ME TEST STRING", chararray) == 0)
-    free(const_cast<char*>(chararray));
+    delete[] chararray;
   
     str = pack(std::string{"PACK ME TEST STRING"});
     PACKME_EXPECT_EQ(str.size(), 19)
@@ -87,7 +87,6 @@ namespace packme::test
     str = pack(b);
     PACKME_EXPECT_EQ(b, unpack<B>(str))
   
-  
     // Custom Type
     class C
     {
@@ -106,16 +105,16 @@ namespace packme::test
       {
         return a == c1.a && b == c1.b && *c == *c1.c;
       }
-      PACKME_FIELDS(C, a, b, c);
+      PACKME_FIELDS(C, a, b, c)
     };
     static_assert(!std::is_aggregate_v<C>);
     C c("packme");
     str = pack(c);
     PACKME_EXPECT_EQ(c, unpack<C>(str))
-    
-
+  
+  
     // Tuple Like
-    auto tuple_like1 = std::make_tuple(b, a, 1, 2, 3.0, 4e31);
+    auto tuple_like1 = std::make_tuple(a, b, 1, 2, 3.0, 4e31);
     auto tuple_like2 = std::make_pair(a, b);
     str = pack(tuple_like1);
     PACKME_EXPECT_EQ(tuple_like1, unpack<decltype(tuple_like1)>(str))

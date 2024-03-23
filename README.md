@@ -28,8 +28,10 @@ packme
 ### Usage
 #### non-invasive
 - aggregate struct 
-- trivially copyable type
 - container with `begin()`, `end()`, `insert(iter, val)`
+- tuple-like
+- trivially copyable type
+- ...
 ```c++
 struct A{ int a; double b;};
 struct B
@@ -48,30 +50,41 @@ std::string str = pack(b);
 B new_b = unpack<B>(str);
 ```
 #### invasive
-- types with `PACKME_FIELDS(typename, field1, field2, ...)`  
-
- `PACKME_FIELDS` will generate two functions in place, which are a constructor and a function packing every field.
+- types with `PACKME_FIELDS(typename, field1, field2, ...)`
 
 ```c++
 class C
 {
 private:
   int a;   
-  std::string b;
-  double* c; 
+  double* b; 
 public:
-  C(std::string b_): a(128), b(std::move(b_)), c(new double(3.14)) { }   
+  C(std::string b_): a(128), b(new double(3.14)) { }   
   ~C()
   {
-    delete c;
-    c = nullptr;
+    delete b;
+    b = nullptr;
   }
-  PACKME_FIELDS(C, a, b, c);
+  PACKME_FIELDS(C, a, b);
 }; 
 C c("packme");
 std::string str = pack(c);
 C new_c = unpack<C>(str);
 ```
+`PACKME_FIELDS` will generate two functions in place.
+```c++
+class C
+{
+  public:
+  using packme_tuple_type = std::tuple<int, double*>;
+  inline auto packme_make_tuple() const
+  { return std::make_tuple(a, b); }
+  explicit C(const CustomTypeHelper<C> &t)
+    : a(t.get<0>()), b(t.get<1>()) {}
+  // CustomTypeHelper is a helper class defined in packme.h
+};
+```
+
 ### Note
 
 - Requires C++ 20

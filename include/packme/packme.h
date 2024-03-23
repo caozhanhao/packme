@@ -35,6 +35,8 @@
 #include <array>
 #include <cstring>
 
+#define PACKME_MARCO_EXPAND(...) __VA_ARGS__
+
 #define PACKME_ARG_COUNT_(\
 	 _0,  _1,  _2,  _3,  _4,  _5,  _6,  _7,  _8,  _9, \
 	_10, _11, _12, _13, _14, _15, _16, _17, _18, _19, \
@@ -44,15 +46,15 @@
 	_50, _51, _52, _53, _54, _55, _56, _57, _58, _59, \
 	_60, _61, _62, _63, _64, N, ...) N
 
-#define PACKME_ARG_COUNT(...) PACKME_ARG_COUNT_(0, ##__VA_ARGS__,\
+#define PACKME_ARG_COUNT(...) PACKME_MARCO_EXPAND(PACKME_ARG_COUNT_(0, ##__VA_ARGS__,\
 	64, 63, 62, 61, 60, \
 	59, 58, 57, 56, 55, 54, 53, 52, 51, 50, \
 	49, 48, 47, 46, 45, 44, 43, 42, 41, 40, \
 	39, 38, 37, 36, 35, 34, 33, 32, 31, 30, \
 	29, 28, 27, 26, 25, 24, 23, 22, 21, 20, \
 	19, 18, 17, 16, 15, 14, 13, 12, 11, 10, \
-	 9,  8,  7,  6,  5,  4,  3,  2,  1,  0)
-
+	 9,  8,  7,  6,  5,  4,  3,  2,  1,  0))
+  
 #define PACKME_ARG_EXPAND_1(f,t,...)  f(t)
 #define PACKME_ARG_EXPAND_2(f,t,...)  PACKME_MARCO_EXPAND(PACKME_ARG_EXPAND_1(f,__VA_ARGS__)) ,f(t)
 #define PACKME_ARG_EXPAND_3(f,t,...)  PACKME_MARCO_EXPAND(PACKME_ARG_EXPAND_2(f,__VA_ARGS__)) ,f(t)
@@ -121,84 +123,85 @@
 #define PACKME_CONCAT_(l, r) l ## r
 #define PACKME_CONCAT(l, r) PACKME_CONCAT_(l, r)
 
-#define PACKME_MARCO_EXPAND(...) __VA_ARGS__
 #define PACKME_EXPAND_(func,...) \
 		PACKME_MARCO_EXPAND(PACKME_CONCAT(PACKME_ARG_EXPAND_, PACKME_ARG_COUNT(__VA_ARGS__))(func, __VA_ARGS__))
   
 #define PACKME_EXPAND(func,...) \
     PACKME_EXPAND_(func, __VA_ARGS__)
 
-    
-#define PACKME_COPY3(f1, f2, f3) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>())
-
-template<typename... List>
-struct TypeList {};
-struct TypeListError {};
-template<typename... List>
-std::tuple<List...> as_tuple(TypeList<List...>);
-
-template<typename List, typename NewElement>
-struct push_back;
-template<typename... elems, typename new_elem>
-struct push_back<TypeList<elems...>, new_elem>
-{
-  using type = TypeList<elems..., new_elem>;
-};
-template<typename List, typename new_elem>
-using push_back_t = typename push_back<List, new_elem>::type;
-
-template<typename List>
-struct is_empty
-{
-  static constexpr bool value = false;
-};
-template<>
-struct is_empty<TypeList<>>
-{
- static constexpr bool value = true;
-};
-template<typename List>
-constexpr bool is_empty_v = is_empty<List>::value;
-
-template<typename List>
-struct front;
-template<typename First, typename ...Rest>
-struct front<TypeList<First, Rest...>>
-{
-  using type = First;
-};
-template<typename List>
-using front_t = typename front<List>::type;
-
-template<typename List>
-struct pop_front;
-template<typename First, typename ...Rest>
-struct pop_front<TypeList<First, Rest...>>
-{
-  using type = TypeList<Rest...>;
-};
-template<typename List>
-using pop_front_t = typename pop_front<List>::type;
-
-template<typename List, bool Empty = is_empty_v<List>>
-struct reverse;
-template<typename List>
-struct reverse<List, false> : public push_back<typename reverse<pop_front_t<List>>::type, front_t<List>> { };
-template<typename List>
-struct reverse<List, true>
-{
-  using type = List;
-};
-template<typename List>
-using reverse_t = typename reverse<List>::type;
+#define PACKME_COPY_1(f1) f1(t.get<0>())
+#define PACKME_COPY_2(f1, f2) f1(t.get<0>()), f2(t.get<1>())
+#define PACKME_COPY_3(f1, f2, f3) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>())
+#define PACKME_COPY_4(f1, f2, f3, f4) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>())
+#define PACKME_COPY_5(f1, f2, f3, f4, f5) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>())
+#define PACKME_COPY_6(f1, f2, f3, f4, f5, f6) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>())
+#define PACKME_COPY_7(f1, f2, f3, f4, f5, f6, f7) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>())
+#define PACKME_COPY_8(f1, f2, f3, f4, f5, f6, f7, f8) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>())
+#define PACKME_COPY_9(f1, f2, f3, f4, f5, f6, f7, f8, f9) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>())
+#define PACKME_COPY_10(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>())
+#define PACKME_COPY_11(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>())
+#define PACKME_COPY_12(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>())
+#define PACKME_COPY_13(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>())
+#define PACKME_COPY_14(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>())
+#define PACKME_COPY_15(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>())
+#define PACKME_COPY_16(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>())
+#define PACKME_COPY_17(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>())
+#define PACKME_COPY_18(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>())
+#define PACKME_COPY_19(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>())
+#define PACKME_COPY_20(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>())
+#define PACKME_COPY_21(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>())
+#define PACKME_COPY_22(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>())
+#define PACKME_COPY_23(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>())
+#define PACKME_COPY_24(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>())
+#define PACKME_COPY_25(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>())
+#define PACKME_COPY_26(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>())
+#define PACKME_COPY_27(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>())
+#define PACKME_COPY_28(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>())
+#define PACKME_COPY_29(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>())
+#define PACKME_COPY_30(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>())
+#define PACKME_COPY_31(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>())
+#define PACKME_COPY_32(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>())
+#define PACKME_COPY_33(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>())
+#define PACKME_COPY_34(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>())
+#define PACKME_COPY_35(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>())
+#define PACKME_COPY_36(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>())
+#define PACKME_COPY_37(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>())
+#define PACKME_COPY_38(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>())
+#define PACKME_COPY_39(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>())
+#define PACKME_COPY_40(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>())
+#define PACKME_COPY_41(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>())
+#define PACKME_COPY_42(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>())
+#define PACKME_COPY_43(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>())
+#define PACKME_COPY_44(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>())
+#define PACKME_COPY_45(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>())
+#define PACKME_COPY_46(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>())
+#define PACKME_COPY_47(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>())
+#define PACKME_COPY_48(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>())
+#define PACKME_COPY_49(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>())
+#define PACKME_COPY_50(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>())
+#define PACKME_COPY_51(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>())
+#define PACKME_COPY_52(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>())
+#define PACKME_COPY_53(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>())
+#define PACKME_COPY_54(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>())
+#define PACKME_COPY_55(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>())
+#define PACKME_COPY_56(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>())
+#define PACKME_COPY_57(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>()), f57(t.get<56>())
+#define PACKME_COPY_58(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>()), f57(t.get<56>()), f58(t.get<57>())
+#define PACKME_COPY_59(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>()), f57(t.get<56>()), f58(t.get<57>()), f59(t.get<58>())
+#define PACKME_COPY_60(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>()), f57(t.get<56>()), f58(t.get<57>()), f59(t.get<58>()), f60(t.get<59>())
+#define PACKME_COPY_61(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>()), f57(t.get<56>()), f58(t.get<57>()), f59(t.get<58>()), f60(t.get<59>()), f61(t.get<60>())
+#define PACKME_COPY_62(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>()), f57(t.get<56>()), f58(t.get<57>()), f59(t.get<58>()), f60(t.get<59>()), f61(t.get<60>()), f62(t.get<61>())
+#define PACKME_COPY_63(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>()), f57(t.get<56>()), f58(t.get<57>()), f59(t.get<58>()), f60(t.get<59>()), f61(t.get<60>()), f62(t.get<61>()), f63(t.get<62>())
+#define PACKME_COPY_64(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62, f63, f64) f1(t.get<0>()), f2(t.get<1>()), f3(t.get<2>()), f4(t.get<3>()), f5(t.get<4>()), f6(t.get<5>()), f7(t.get<6>()), f8(t.get<7>()), f9(t.get<8>()), f10(t.get<9>()), f11(t.get<10>()), f12(t.get<11>()), f13(t.get<12>()), f14(t.get<13>()), f15(t.get<14>()), f16(t.get<15>()), f17(t.get<16>()), f18(t.get<17>()), f19(t.get<18>()), f20(t.get<19>()), f21(t.get<20>()), f22(t.get<21>()), f23(t.get<22>()), f24(t.get<23>()), f25(t.get<24>()), f26(t.get<25>()), f27(t.get<26>()), f28(t.get<27>()), f29(t.get<28>()), f30(t.get<29>()), f31(t.get<30>()), f32(t.get<31>()), f33(t.get<32>()), f34(t.get<33>()), f35(t.get<34>()), f36(t.get<35>()), f37(t.get<36>()), f38(t.get<37>()), f39(t.get<38>()), f40(t.get<39>()), f41(t.get<40>()), f42(t.get<41>()), f43(t.get<42>()), f44(t.get<43>()), f45(t.get<44>()), f46(t.get<45>()), f47(t.get<46>()), f48(t.get<47>()), f49(t.get<48>()), f50(t.get<49>()), f51(t.get<50>()), f52(t.get<51>()), f53(t.get<52>()), f54(t.get<53>()), f55(t.get<54>()), f56(t.get<55>()), f57(t.get<56>()), f58(t.get<57>()), f59(t.get<58>()), f60(t.get<59>()), f61(t.get<60>()), f62(t.get<61>()), f63(t.get<62>()), f64(t.get<63>())
 
 #define PACKME_FIELDS(T, ...) \
 inline auto packme_make_tuple() const                \
 {                                                    \
   return std::make_tuple(__VA_ARGS__);               \
 }                                                    \
-using packme_tuple_type = decltype(as_tuple(reverse_t<TypeList<PACKME_EXPAND(decltype, __VA_ARGS__)>>{}));                                 \
-explicit T(const ::packme::details::CustomTypeHelper<T>& t): PACKME_COPY3(__VA_ARGS__) {}                         \
+using packme_tuple_type = decltype(::packme::details::as_tuple(::packme::details::reverse_t<::packme::details::TypeList<PACKME_EXPAND(decltype, __VA_ARGS__)>>{}));                                 \
+explicit T(const ::packme::details::CustomTypeHelper<T>& t):                                                                               \
+  PACKME_MARCO_EXPAND(PACKME_CONCAT(PACKME_COPY_, PACKME_ARG_COUNT(__VA_ARGS__)) (__VA_ARGS__)) {}                         \
 
 namespace packme
 {
@@ -210,6 +213,67 @@ namespace packme
   
   namespace details
   {
+    template<typename... List>
+    struct TypeList {};
+    struct TypeListError {};
+    template<typename... List>
+    std::tuple<List...> as_tuple(TypeList<List...>);
+  
+    template<typename List, typename NewElement>
+    struct push_back;
+    template<typename... elems, typename new_elem>
+    struct push_back<TypeList<elems...>, new_elem>
+    {
+      using type = TypeList<elems..., new_elem>;
+    };
+    template<typename List, typename new_elem>
+    using push_back_t = typename push_back<List, new_elem>::type;
+  
+    template<typename List>
+    struct is_empty
+    {
+      static constexpr bool value = false;
+    };
+    template<>
+    struct is_empty<TypeList<>>
+    {
+      static constexpr bool value = true;
+    };
+    template<typename List>
+    constexpr bool is_empty_v = is_empty<List>::value;
+  
+    template<typename List>
+    struct front;
+    template<typename First, typename ...Rest>
+    struct front<TypeList<First, Rest...>>
+    {
+      using type = First;
+    };
+    template<typename List>
+    using front_t = typename front<List>::type;
+  
+    template<typename List>
+    struct pop_front;
+    template<typename First, typename ...Rest>
+    struct pop_front<TypeList<First, Rest...>>
+    {
+      using type = TypeList<Rest...>;
+    };
+    template<typename List>
+    using pop_front_t = typename pop_front<List>::type;
+  
+    template<typename List, bool Empty = is_empty_v<List>>
+    struct reverse;
+    template<typename List>
+    struct reverse<List, false> : public push_back<typename reverse<pop_front_t<List>>::type, front_t<List>> { };
+    template<typename List>
+    struct reverse<List, true>
+    {
+      using type = List;
+    };
+    template<typename List>
+    using reverse_t = typename reverse<List>::type;
+  
     template<typename T>
     struct CustomTypeHelper{
       using tuple_type = typename T::packme_tuple_type;
@@ -238,15 +302,16 @@ namespace packme
     constexpr bool is_map_v = is_specialization_of_v<T, std::map>;
     
     template<typename T>
-    constexpr bool is_tuple_like_v =
-        is_specialization_of_v<T, std::pair>
-        || is_specialization_of_v<T, std::tuple>;
+    constexpr bool is_serializable_tuple_like_v =
+        (is_specialization_of_v<T, std::pair>
+        || is_specialization_of_v<T, std::tuple>)
+           && std::is_default_constructible_v<T>;
     
     template<typename T>
-    requires std::is_aggregate_v<std::remove_cvref_t<T>> || is_tuple_like_v<std::remove_cvref_t<T>>
+    requires std::is_aggregate_v<std::remove_cvref_t<T>> || is_serializable_tuple_like_v<std::remove_cvref_t<T>>
     consteval auto field_num(auto &&... args)
     {
-      if constexpr(is_tuple_like_v<T>)
+      if constexpr(is_serializable_tuple_like_v<T>)
       {
         return std::tuple_size<T>();
       }
@@ -264,24 +329,9 @@ namespace packme
     }
     
     template<typename T, typename Fn>
-    requires std::is_aggregate_v<std::remove_cvref_t<T>> || is_tuple_like_v<std::remove_cvref_t<T>>
+    requires std::is_aggregate_v<std::remove_cvref_t<T>> || is_serializable_tuple_like_v<std::remove_cvref_t<T>>
     constexpr auto field_for_each(T &&t, Fn &&fn)
     {
-      // Python:
-      //fmt = "else if constexpr (num == {0}) {{auto&& [{1}] = std::forward<T>(t);{2}}}"
-      //
-      //print(fmt)
-      //num = int(input("num: "))
-      //for i in range(2, num + 2):
-      //    str0 = str(i - 1)
-      //    str1 = ""
-      //    for j in range(1, i):
-      //        str1 += "_" + str(j) + ", "
-      //    str1 = str1[:-2]
-      //    str2 = ""
-      //    for j in range(1, i):
-      //        str2 += "fn(" + "_" + str(j) + ");"
-      //    print(fmt.format(str0, str1, str2))
       constexpr auto num = field_num<std::remove_cvref_t<T>>();
       if constexpr (num == 1) {auto&& [_1] = std::forward<T>(t);fn(_1);}
       else if constexpr (num == 2) {auto&& [_1, _2] = std::forward<T>(t);fn(_1);fn(_2);}
@@ -398,6 +448,7 @@ namespace packme
     requires(T value)
     {
       { value.insert(std::end(value), std::declval<decltype(*std::begin(value))>()) };
+      requires std::is_default_constructible_v<T>;
     };
   
     template<typename T, typename U = void>
@@ -422,7 +473,7 @@ namespace packme
     constexpr bool is_serializable_container_v = is_serializable_container<T>::value;
     
     template<typename T>
-    constexpr bool is_serializable_struct_v = !is_container_v<T> && std::is_aggregate_v<T>;
+    constexpr bool is_serializable_struct_v = !is_container_v<T> && std::is_aggregate_v<T> && std::is_default_constructible_v<T>;
     
     template<typename T>
     auto dispatch_tag()
@@ -436,8 +487,8 @@ namespace packme
       else if constexpr(std::is_same_v<R, std::string>) return string_tag{};
       else if constexpr(is_map_v<R>) return map_tag{};
       else if constexpr(is_serializable_container_v<R>) return container_tag{};
-      else if constexpr(is_serializable_struct_v<R> || is_tuple_like_v<R>) return struct_tag{};
-      else if constexpr(std::is_trivially_copyable_v<R>) return trivially_copy_tag{};
+      else if constexpr(is_serializable_struct_v<R> || is_serializable_tuple_like_v<R>) return struct_tag{};
+      else if constexpr(std::is_default_constructible_v<R> && std::is_trivially_copyable_v<R>) return trivially_copy_tag{};
       else return not_implemented_tag{};
     }
     
@@ -446,7 +497,7 @@ namespace packme
     
     template<typename T>
     std::string internal_pack(not_implemented_tag, const T &item);
-    
+  
     template<typename T>
     T internal_unpack(not_implemented_tag, const std::string &str);
     
@@ -542,7 +593,7 @@ namespace packme
     {
       return item;
     }
-    
+  
     template<typename T>
     T internal_unpack(string_tag, const std::string &str)
     {
@@ -558,7 +609,7 @@ namespace packme
         v.emplace_back(r);
       return pack(v);
     }
-    
+  
     template<typename T>
     T internal_unpack(map_tag, const std::string &str)
     {
@@ -685,9 +736,8 @@ namespace packme
     T internal_unpack(pointer_tag, const std::string &str)
     {
       using value_type = std::remove_pointer_t<T>;
-      T item = reinterpret_cast<T>(malloc(sizeof(value_type)));
-      value_type value = unpack<value_type>(str);
-      std::memcpy(item, &value, sizeof(value_type));
+      T item = new value_type();
+      *item = unpack<value_type>(str);
       return item;
     }
   
@@ -706,9 +756,8 @@ namespace packme
     std::decay_t<T> internal_unpack(array_tag, const std::string &str)
     {
       using value_type = std::remove_extent_t<T>;
-      using ret_type = std::remove_cvref_t<std::remove_extent_t<T>>*;
       if (str.empty()) return nullptr;
-      ret_type ret = reinterpret_cast<ret_type>(malloc(sizeof(T)));
+      auto ret = new value_type[sizeof(T) / sizeof(value_type)];
       for (size_t i = 0, pos = 0; i < str.size() && pos < sizeof(T) / sizeof(value_type); ++pos)
       {
         ret[pos] = std::move(item_unpack_helper<value_type>(str, i));
@@ -734,7 +783,7 @@ namespace packme
   std::string pack(const T &item)
   {
     static_assert(!details::tag_is<T, details::not_implemented_tag>,
-                  "Type must overload packme::pack() and packme::unpack()");
+                  "Please add PACKME_FIELDS(typename, field1, field2, ...)");
     return details::internal_pack<T>(details::dispatch_tag<T>(), item);
   }
   
@@ -743,7 +792,7 @@ namespace packme
   std::decay_t<T> unpack(const std::string &str)
   {
     static_assert(!details::tag_is<T, details::not_implemented_tag>,
-                  "Type must overload packme::pack() and packme::unpack()");
+                  "Please add PACKME_FIELDS(typename, field1, field2, ...)");
     return details::internal_unpack<T>(details::dispatch_tag<T>(), str);
   }
 }

@@ -172,7 +172,7 @@ namespace packme::test
       ret += "}";
       return ret;
     }
-    else if constexpr(details::is_tuple_like_v<std::remove_cvref_t<T>>)
+    else if constexpr(details::is_serializable_tuple_like_v<std::remove_cvref_t<T>>)
     {
       std::string ret = "{";
       details::field_for_each(a, [&ret](auto&& item){
