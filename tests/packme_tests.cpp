@@ -95,7 +95,7 @@ namespace packme::test
       std::string b;
       double* c;
     public:
-      C(std::string b_): a(128), b(std::move(b_)), c(new double(3.14)) { }
+      explicit C(std::string b_): a(128), b(std::move(b_)), c(new double(3.14)) { }
       ~C()
       {
         delete c;
@@ -111,14 +111,13 @@ namespace packme::test
     C c("packme");
     str = pack(c);
     PACKME_EXPECT_EQ(c, unpack<C>(str))
-  
-  
+
     // Tuple Like
     auto tuple_like1 = std::make_tuple(a, b, 1, 2, 3.0, 4e31);
     auto tuple_like2 = std::make_pair(a, b);
     str = pack(tuple_like1);
     PACKME_EXPECT_EQ(tuple_like1, unpack<decltype(tuple_like1)>(str))
-    str= pack(tuple_like2);
+    str = pack(tuple_like2);
     PACKME_EXPECT_EQ(tuple_like2, unpack<decltype(tuple_like2)>(str))
 
     // Container
